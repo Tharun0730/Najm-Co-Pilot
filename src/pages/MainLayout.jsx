@@ -4,7 +4,7 @@ import Sidebar from '../components/layout/SideBAr';
 import ChatContainer from '../components/chatContainerComponents/ChatContainer';
 
 
-const AppLayout = () => {
+const MainLayout = () => {
   const isMobile = useMediaQuery('(max-width:768px)');
   const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,4 +20,4 @@ const AppLayout = () => {
   );
 };
 
-export default AppLayout;
+export default MainLayout;
