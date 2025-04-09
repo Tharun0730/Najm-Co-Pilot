@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, useMediaQuery } from '@mui/material';
-import Sidebar from '../components/layout/SideBAr';
+import Sidebar from '../components/layout/Sidebar';
 import ChatContainer from '../components/chatContainerComponents/ChatContainer';
 
 
