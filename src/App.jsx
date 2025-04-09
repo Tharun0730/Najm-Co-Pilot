@@ -5,6 +5,7 @@ import './App.css'
 import Sidebar from './components/layout/SideBAr'
 import ChatContainer from './components/chatContainerComponents/ChatContainer'
 import MainLayout from './pages/mainLayout'
+import MainRoute from './Routes/MainRoutes'
 
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
 
   return (
     <>
-<MainLayout/>
+<MainRoute/>
 
     </>
   )
