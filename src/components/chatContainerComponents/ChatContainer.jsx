@@ -55,8 +55,8 @@ const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth
           padding: 3,
           pt: 10,
           px: {
-            xs:3,
-            sm:10
+            xs:5,
+            sm:8
           },
         }}
       >
