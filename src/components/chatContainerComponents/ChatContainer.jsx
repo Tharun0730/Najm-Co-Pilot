@@ -7,19 +7,47 @@ import {
   IconButton,
   InputAdornment,
   Skeleton,
+  Tooltip,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useSelector, useDispatch } from 'react-redux';
 import ChatHeader from './ChatContainerHeader';
-import { addUserMessage, fetchBotResponse } from '../../store/features/chatSlice';
+import {
+  addUserMessage,
+  fetchBotResponse,
+  clearMessages,
+  loadMessages,
+} from '../../store/features/chatSlice';
 
-const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth ,handleToggleCollapse}) => {
+const ChatContainer = ({
+  isMobile,
+  mobileOpen,
+  setMobileOpen,
+  collapsed,
+  HeaderWidth,
+  handleToggleCollapse,
+}) => {
   const [inputValue, setInputValue] = useState('');
   const messages = useSelector((state) => state.chatSlice.messages);
   const status = useSelector((state) => state.chatSlice.status);
   const dispatch = useDispatch();
-
   const messagesEndRef = useRef(null);
+
+  const predefinedPrompts = [
+    'Who is Dhoni?',
+    'Tell me a fun fact',
+    'What’s the capital of India?',
+    'Give me a joke',
+    'How does AI work?',
+  ];
+
+  useEffect(() => {
+    const savedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+    if (savedMessages.length > 0) {
+      dispatch(loadMessages(savedMessages));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -34,6 +62,14 @@ const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth
     setInputValue('');
   };
 
+  const handleClearChat = () => {
+    dispatch(clearMessages());
+  };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+  };
+
   return (
     <Box
       sx={{
@@ -45,19 +81,24 @@ const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth
         mx: 'auto',
       }}
     >
-      {HeaderWidth && <ChatHeader mobileOpen={mobileOpen} isMobile={isMobile} setMobileOpen={setMobileOpen}  collapsed={collapsed} handleToggleCollapse={handleToggleCollapse} HeaderWidth={HeaderWidth} />}
+      {HeaderWidth && (
+        <ChatHeader
+          mobileOpen={mobileOpen}
+          isMobile={isMobile}
+          setMobileOpen={setMobileOpen}
+          collapsed={collapsed}
+          handleToggleCollapse={handleToggleCollapse}
+          HeaderWidth={HeaderWidth}
+        />
+      )}
 
-      {/* Messages Section */}
       <Box
         sx={{
           flex: 1,
           overflowY: 'auto',
           padding: 3,
           pt: 10,
-          px: {
-            xs:5,
-            sm:8
-          },
+          px: { xs: 5, sm: 8 },
         }}
       >
         <Typography variant="body2" color="text.secondary" mb={1}>
@@ -68,18 +109,39 @@ const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth
           <Box key={idx} mb={2} textAlign={msg.type === 'user' ? 'right' : 'left'}>
             <Box
               sx={{
+                position: 'relative',
                 maxWidth: msg.type === 'user' ? '75%' : '100%',
                 marginLeft: msg.type === 'user' ? 'auto' : '0',
                 backgroundColor: msg.type === 'user' ? '#e6f0ff' : '#fff',
                 borderRadius: 2,
-                padding: 2,
+              px:3.2,
+              py:2,
                 boxShadow: msg.type === 'user' ? 'none' : 1,
               }}
             >
               <Typography
                 variant="body2"
-                dangerouslySetInnerHTML={{ __html: msg.content }}
+                dangerouslySetInnerHTML={{
+                  __html: msg.content.replace(/\n/g, '<br/>'),
+                }}
               />
+              {msg.type === 'bot' && (
+                <Tooltip title="Copy">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleCopy(msg.content)}
+                    sx={{
+                      position: 'absolute',
+                      top: 5,
+                      right: 5,
+                      color: '#aaa',
+                      '&:hover': { color: '#000' },
+                    }}
+                  >
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
             {msg.type === 'bot' && (
               <Typography
@@ -120,11 +182,48 @@ const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth
           </Box>
         )}
 
-        {/* Dummy ref element for auto scroll */}
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input Section */}
+      <Box
+  sx={{
+    display: 'flex',
+    overflowX: { xs: 'auto', sm: 'visible' },
+    flexWrap: { xs: 'nowrap', sm: 'wrap' },
+    gap: 1,
+    px: { xs: 2, sm: 5 },
+    mb: 2,
+    pb: 1,
+    '&::-webkit-scrollbar': { display: 'none' },
+  }}
+>
+  {predefinedPrompts.map((prompt, index) => (
+    <Paper
+      key={index}
+      elevation={1}
+      sx={{
+        whiteSpace: 'nowrap',
+        paddingX: 2,
+        paddingY: 1,
+        backgroundColor: 'transpalert',
+        cursor: 'pointer',
+        borderRadius: 5,
+        flexShrink: 0,
+        '&:hover': {
+          backgroundColor: '#e0e0e0',
+        },
+      }}
+      onClick={() => {
+        dispatch(addUserMessage(prompt));
+        dispatch(fetchBotResponse(prompt));
+      }}
+    >
+      <Typography variant="body2">{prompt}</Typography>
+    </Paper>
+  ))}
+</Box>
+
+
       <Paper
         elevation={3}
         sx={{
@@ -132,9 +231,7 @@ const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth
           borderTop: '1px solid #e0e0e0',
           backgroundColor: '#fff',
           borderRadius: 3,
-          mx: {
-            xs:2,sm:5
-          },
+          mx: { xs: 2, sm: 5 },
           mb: 3,
         }}
       >
@@ -179,6 +276,12 @@ const ChatContainer = ({isMobile,mobileOpen,setMobileOpen,collapsed, HeaderWidth
           }}
         />
       </Paper>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', px: 3 }}>
+        <IconButton onClick={handleClearChat} sx={{ color: '#888' }}>
+          <Typography variant="body2">Clear Chat</Typography>
+        </IconButton>
+      </Box>
     </Box>
   );
 };

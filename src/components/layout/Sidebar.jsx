@@ -23,19 +23,20 @@ import CompanySwitcher from '../sideBarComponents/CompanySwitcher';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchChatHistory } from '../../store/features/chatHistorySlice';
 import ChatHistoryList from '../sideBarComponents/ChatHistoryList';
-
+import { clearMessages } from '../../store/features/chatSlice';
+import DeleteIcon from '@mui/icons-material/Delete';
 const Sidebar = ({collapsed, setCollapsed,mobileOpen, setMobileOpen}) => {
   const dispatch = useDispatch();
   const isMobile = useMediaQuery('(max-width:768px)');
-
+ 
 //   const [collapsed, setCollapsed] = useState(false);
 
   const [showSearch, setShowSearch] = useState(false);
 
-  const { messageHistoryLoader, messageHistory } = useSelector(
+  const { messageHistoryLoader,  } = useSelector(
     (state) => state.chatHistorySlice
   );
-
+  const messageHistory = useSelector((state) => state.chatSlice.messages);
   const handleMenuClick = () => {
     if (isMobile) {
       setMobileOpen(true);
@@ -43,13 +44,12 @@ const Sidebar = ({collapsed, setCollapsed,mobileOpen, setMobileOpen}) => {
       setCollapsed((prev) => !prev);
     }
   };
+ const handleClearChat = () => {
+    dispatch(clearMessages());
+  };
 
   const handleMobileClose = () => setMobileOpen(false);
   const handleSearchToggle = () => setShowSearch((prev) => !prev);
-
-  useEffect(() => {
-    dispatch(fetchChatHistory());
-  }, [dispatch]);
 
   const drawerContent = (
     <Box
@@ -101,10 +101,17 @@ const Sidebar = ({collapsed, setCollapsed,mobileOpen, setMobileOpen}) => {
 
       <CompanySwitcher />
 
-      <Box sx={{ display: 'flex', justifyContent: 'start' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between',alignItems:"center" }}>
         <Typography variant="body2" fontWeight={600}>
           New Chat
         </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end'}}>
+                <IconButton onClick={handleClearChat} sx={{ color: '#888' }}>
+                 <DeleteIcon color='error'/>
+                </IconButton>
+              </Box>
+
+        
       </Box>
 
       <ChatHistoryList

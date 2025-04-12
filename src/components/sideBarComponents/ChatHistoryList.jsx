@@ -8,7 +8,9 @@ import {
   ListItem,
 } from '@mui/material';
 import SortOutlinedIcon from '@mui/icons-material/SortOutlined';
+
 const ChatHistoryList = ({ messageHistory, messageHistoryLoader }) => {
+  console.log(messageHistory.length,"messageHistory.length")
   return (
     <Box sx={{ p: 0.4, flexGrow: 1, overflowY: 'auto', maxHeight: '55vh' }}>
       <List>
@@ -20,37 +22,39 @@ const ChatHistoryList = ({ messageHistory, messageHistoryLoader }) => {
               <Divider sx={{ my: 2 }} />
             </React.Fragment>
           ))
-        ) : messageHistory && messageHistory.length > 0 ? (
-          messageHistory.map((data, key) => (
+        ) : messageHistory && messageHistory.length >= 2 ? (
+          messageHistory.map((data, key) =>{
+            if(data.type !== 'user') return null
+          return(
             <React.Fragment key={key}>
-              <ListItem
-                button
-                sx={{
-                 px:0,
-                  borderRadius: 1,
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.05)', // light gray
-                  },
-                }}
+            <ListItem
+              button
+              sx={{
+                px: 0,
+                borderRadius: 1,
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.05)', // light gray
+                },
+              }}
+            >
+              <SortOutlinedIcon sx={{ marginRight: "5px", color: "text.secondary" }} />
+              <Typography
+                textAlign="start"
+                variant="body2"
+                color="text.secondary"
+                noWrap
+                sx={{ width: '100%' }}
               >
-                
-                <SortOutlinedIcon sx={{
-                  marginRight:"5px",
-                   color:"text.secondary"
-                }}/>
-                <Typography
-                  textAlign="start"
-                  variant="body2"
-                  color="text.secondary"
-                  noWrap
-                  sx={{ width: '100%' }}
-                >
-                  {data.message}
-                </Typography>
-              </ListItem>
-              <Divider sx={{ my: 1 }} />
-            </React.Fragment>
-          ))
+            
+                {data.type === 'user' && (
+                  <strong>{data.content}</strong>
+                ) }
+              </Typography>
+            </ListItem>
+            <Divider sx={{ my: 1 }} />
+          </React.Fragment>
+          )
+          })
         ) : (
           <Typography
             textAlign="center"

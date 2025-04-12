@@ -1,4 +1,4 @@
-// ChatHeader.jsx
+
 import React from 'react';
 import { Box, Typography, Avatar, IconButton } from '@mui/material';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
