@@ -98,7 +98,7 @@ const ChatContainer = ({
           overflowY: 'auto',
           padding: 3,
           pt: 10,
-          px: { xs: 5, sm: 8 },
+          px: { xs: 7, sm: 8 },
         }}
       >
         <Typography variant="body2" color="text.secondary" mb={1}>
@@ -232,7 +232,9 @@ const ChatContainer = ({
           backgroundColor: '#fff',
           borderRadius: 3,
           mx: { xs: 2, sm: 5 },
-          mb: 3,
+          mb: {
+            xs:5,sm:3
+          },
         }}
       >
         <TextField
