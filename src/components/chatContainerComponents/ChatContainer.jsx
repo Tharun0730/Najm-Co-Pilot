@@ -277,11 +277,11 @@ const ChatContainer = ({
         />
       </Paper>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', px: 3 }}>
+      {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', px: 3 }}>
         <IconButton onClick={handleClearChat} sx={{ color: '#888' }}>
           <Typography variant="body2">Clear Chat</Typography>
         </IconButton>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
